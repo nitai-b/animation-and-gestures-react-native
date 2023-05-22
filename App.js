@@ -16,7 +16,9 @@ export default function App() {
         onPanResponderGrant: (evt, gestureState) => {
             pan.setOffset({x: pan.x._value, y: pan.y._value})
         },
-        onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: true}),
+        onPanResponderMove: (_, gestureState) => {
+            pan.setValue({x: gestureState.dx, y: gestureState.dy})
+        },
         onPanResponderTerminationRequest: (evt, gestureState) => true,
         onPanResponderRelease: (evt, gestureState) => {
             pan.flattenOffset()
