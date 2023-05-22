@@ -6,9 +6,9 @@ export default function App() {
 
     const moveBall = () => {
         Animated.timing(leftValue, {
-            toValue: 1000,
+            toValue: 200,
             duration: 1000,
-            useNativeDriver: false
+            useNativeDriver: true
         }).start()
     }
 
@@ -17,7 +17,9 @@ export default function App() {
             <Animated.View style={[{
                 width: 100,
                 height: 100,
-                marginLeft: leftValue,
+                transform: [
+                    {translateX: leftValue}
+                ],
                 borderRadius: 50,
                 backgroundColor: 'red',
             }]}>
