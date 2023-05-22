@@ -38,7 +38,11 @@ export default function App() {
     return (<View style={styles.container}>
         <Animated.View {...panResponder.panHandlers} style={[{
             width: diameter, height: diameter, opacity, borderRadius: 50, backgroundColor: 'red',
-        }, pan.getLayout()]}/>
+            transform: [
+                {translateX: pan.x},
+                {translateY: pan.y}
+            ]
+        } /*,pan.getLayout()*/]}/>
     </View>);
 }
 
