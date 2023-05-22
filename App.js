@@ -2,11 +2,20 @@ import {useRef} from 'react';
 import {Animated, Button, StyleSheet, View} from 'react-native';
 
 export default function App() {
-    const leftValue = useRef(new Animated.Value(0)).current;
+    const opacity = useRef(new Animated.Value(1)).current;
+    const diameter = 100;
 
-    const moveBall = () => {
-        Animated.timing(leftValue, {
-            toValue: 200,
+    const fadeInBall = () => {
+        Animated.spring(opacity, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true
+        }).start()
+    }
+
+    const fadeOutBall = () => {
+        Animated.timing(opacity, {
+            toValue: 0,
             duration: 1000,
             useNativeDriver: true
         }).start()
@@ -15,17 +24,16 @@ export default function App() {
     return (
         <View style={styles.container}>
             <Animated.View style={[{
-                width: 100,
-                height: 100,
-                transform: [
-                    {translateX: leftValue}
-                ],
+                width: diameter,
+                height: diameter,
+                opacity,
                 borderRadius: 50,
                 backgroundColor: 'red',
             }]}>
 
             </Animated.View>
-            <Button onPress={moveBall} title="Click me" style={{marginTop: 'auto'}}/>
+            <Button onPress={fadeInBall} title="Fade In" style={{marginTop: 'auto'}}/>
+            <Button onPress={fadeOutBall} title="Fade Out" style={{marginTop: 'auto'}}/>
         </View>
     );
 }
