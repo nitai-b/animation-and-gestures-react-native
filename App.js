@@ -1,48 +1,47 @@
-import {useRef} from 'react';
-import {Animated, Button, StyleSheet, View} from 'react-native';
+import React, {useRef} from 'react';
+import {Animated, Button, PanResponder, StyleSheet, View} from 'react-native';
 
 export default function App() {
-    const opacity = useRef(new Animated.Value(1)).current;
-    const diameter = 100;
+    const diameter = 100, opacity = 1;
 
-    const fadeInBall = () => {
-        Animated.spring(opacity, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true
-        }).start()
-    }
+    // this is an animated object that is used in the pan responder move it along with the user's finger
+    const pan = useRef(new Animated.ValueXY()).current;
 
-    const fadeOutBall = () => {
-        Animated.timing(opacity, {
-            toValue: 0,
-            duration: 1000,
-            useNativeDriver: true
-        }).start()
-    }
+    const panResponder = React.useRef(PanResponder.create({
+        // Ask to be the responder:
+        onStartShouldSetPanResponder: (evt, gestureState) => true,
+        onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+        onMoveShouldSetPanResponder: (evt, gestureState) => true,
+        onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+        onPanResponderGrant: (evt, gestureState) => {
+            pan.setOffset({x: pan.x._value, y: pan.y._value})
+        },
+        onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: true}),
+        onPanResponderTerminationRequest: (evt, gestureState) => true,
+        onPanResponderRelease: (evt, gestureState) => {
+            pan.flattenOffset()
+        },
+        onPanResponderTerminate: (evt, gestureState) => {
+            // Another component has become the responder, so this gesture
+            // should be cancelled
+        },
+        onShouldBlockNativeResponder: (evt, gestureState) => {
+            // Returns whether this component should block native components from becoming the JS
+            // responder. Returns true by default. Is currently only supported on android.
+            return true;
+        },
+    }),).current;
 
-    return (
-        <View style={styles.container}>
-            <Animated.View style={[{
-                width: diameter,
-                height: diameter,
-                opacity,
-                borderRadius: 50,
-                backgroundColor: 'red',
-            }]}>
 
-            </Animated.View>
-            <Button onPress={fadeInBall} title="Fade In" style={{marginTop: 'auto'}}/>
-            <Button onPress={fadeOutBall} title="Fade Out" style={{marginTop: 'auto'}}/>
-        </View>
-    );
+    return (<View style={styles.container}>
+        <Animated.View {...panResponder.panHandlers} style={[{
+            width: diameter, height: diameter, opacity, borderRadius: 50, backgroundColor: 'red',
+        }, pan.getLayout()]}/>
+    </View>);
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center',
     },
 });
